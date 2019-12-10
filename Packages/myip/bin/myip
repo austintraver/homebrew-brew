@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+if [[ $(uname) == 'Darwin' ]]; then
+  interface='en0'
+fi
+
+curl -s https://checkip.amazonaws.com
+ifconfig ${interface} | grep '\<inet\>' | awk '{ print $2 }'
+
+exit 0

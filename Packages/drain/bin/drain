@@ -1,0 +1,31 @@
+#!/bin/zsh
+
+# Check if the supplied port is not in the valid TCP range
+if [[ ! ${1} =~ (^[0]$|^[1-9][0-9]{0,3}$|^[1-6][0-5][0-5][0-3][0-5]$) ]]; then
+  echo "Invalid port '${1}' not in TCP port range 0 - 65535." >&2 
+  exit 1
+fi
+
+# Check if a non-super-user is trying to modify a well-known port
+if [[ ${1} -lt 1024 && ${UID} -ne 1 ]]; then
+	echo "Well-known port '${1}' requires super user access to modify." >&2
+	exit 1
+fi
+
+# Check if a process can be found on the specified port
+if [[ $(lsof -ti :${1})$? -eq 1 ]] &> /dev/null; then
+  echo "No process detected running on port '${1}'" >&2
+  exit 1
+fi
+
+# Kill the process running on that port
+kill $(lsof -ti :${1}) &> /dev/null
+
+# Report an error if it occured
+if [[ ${?} -eq 1 ]]; then
+  echo "Failed to kill process running on port '${1}'" >&2
+  exit 1
+fi
+
+# Otherwise just exit normally
+exit 0

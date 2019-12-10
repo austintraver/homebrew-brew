@@ -1,0 +1,49 @@
+.de URL
+\\$2 \(laURL: \\$1 \(ra\\$3
+.\" defines a macro called URL, whose definition is on the next line, and .. ends it. 
+..
+.if \n[.g] .mso www.tmac
+.\" test for the presence of GNU roff, and source the www.tmac macro definition
+.\" if it is — this overrides the definition just made
+.\" but leaves it intact for non-GNU roff implementations. 
+.TH OCTO 1 "August 2019" "Octo 1.0" "The 8th Best Manual"
+.SH NAME
+octo \- a file permissions utility 
+.SH SYNOPSIS
+.SS Common Usage
+.PP
+.RS +4
+\fBocto\fR [\fIFILE\fR]
+.RE
+.SH DESCRIPTION
+.SS History
+The \fBocto\fR command has a rich history, dating back to the 18th century.
+For a detailed look, see the section below
+.sp
+.SS Details
+.br
+None for now, but check in later.
+.sp
+.SH OPTIONS
+.\" .RS +4
+\(bu \fBocto\fR [\fIFILE\fR]
+.IP
+Print the octal file permissions for \fIFILE\fR
+.HP
+.SH COPYRIGHT
+Copyright \(co 2019 Splay Tree Capital, Inc.
+.sp 1
+.na
+License GNU GPL 3+ <http://gnu.org/licenses/gpl.html>
+.sp 0
+.ad
+This is free software: you are free to change and redistribute it.
+.sp 0
+There is NO WARRANTY, to the extent permitted by law.
+.SH "SEE ALSO"
+.BR fake (4),
+.BR news (2),
+.BR read (0),
+.BR the (6),
+.BR numbers (9).
+.PP

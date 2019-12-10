@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+# Confirm that the file is reachable
+if [[ ! -e ${1} ]]; then
+  echo "Error: file not found" >&2
+  exit 1
+fi
+
+gstat -c '%a' ${1}
+exit 0

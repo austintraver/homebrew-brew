@@ -1,0 +1,54 @@
+.de URL
+\\$2 \(laURL: \\$1 \(ra\\$3
+.\" defines a macro called URL, whose definition is on the next line, and .. ends it. 
+..
+.if \n[.g] .mso www.tmac
+.\" test for the presence of GNU roff, and source the www.tmac macro definition
+.\" if it is — this overrides the definition just made
+.\" but leaves it intact for non-GNU roff implementations. 
+.TH DRAIN 1 "August 2019" "Drain 1.0" "Quite a Draining Manual"
+.SH NAME
+drain \- a port unclogging utility
+.SH SYNOPSIS
+.SS Common Usage
+.PP
+.RS +4
+\fBdrain\fR [\fB-f\fR \fIFILE\fR] [\fB-hb\fR] [\fB-c\fR \fIARGS...\fR]
+.RE
+.SH DESCRIPTION
+.SS History
+The \fBdrain\fR command has a rich history, dating back to the 18th century.
+For a detailed look, see the section below
+.sp
+.SS Details
+.br
+None for now, but check in later.
+.sp
+.SH OPTIONS
+.\" .RS +4
+\(bu \fBdrain\fR {\fB-h\fR | \fB--hello\fR}
+.IP
+Say hello to the user
+.HP
+\(bu \fBgreet\fR {\fB-b\fR | \fB--bye\fR}
+.IP
+Say goodbye to the user
+.HP
+.\" .RE
+.SH COPYRIGHT
+Copyright \(co 2019 Splay Tree Capital, Inc.
+.sp 1
+.na
+License GNU GPL 3+ <http://gnu.org/licenses/gpl.html>
+.sp 0
+.ad
+This is free software: you are free to change and redistribute it.
+.sp 0
+There is NO WARRANTY, to the extent permitted by law.
+.SH "SEE ALSO"
+.BR fake (4),
+.BR news (2),
+.BR read (0),
+.BR the (6),
+.BR numbers (9).
+.PP
