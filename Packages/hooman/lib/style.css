@@ -1,0 +1,63 @@
+@font-face {
+    font-family: SFMono;
+    font-style: normal;
+    font-weight: normal;
+    src: url("/System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Light.otf")
+}
+
+@font-face {
+    font-family: SFMono;
+    font-style: normal;
+    font-weight: bold;
+    src: url("/System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-Bold.otf")
+}
+
+@font-face {
+    font-family: SFMono;
+    font-style: italic;
+    font-weight: normal;
+    src: url("/System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SFMono-RegularItalic.otf")
+}
+
+body {
+    color: #fff;
+    background-color: #1e2127;
+    font-family: SFMono, monospace;
+    font-size: 20px
+}
+
+h2, i {
+    text-decoration: underline
+}
+
+h2 {
+    padding-top: 15px;
+    font-size: 130%;
+    font-weight: 700
+}
+
+b, h2 {
+    color: #ff7277
+}
+
+i {
+    color: #cfffa8
+}
+
+a:link, a:visited {
+    text-decoration: none;
+    color: #87cefa
+}
+
+a:visited {
+    color: #ffb6c1
+}
+
+a:active, a:hover {
+    text-decoration: underline;
+    color: #ffd374
+}
+
+a:active {
+    color: white
+}

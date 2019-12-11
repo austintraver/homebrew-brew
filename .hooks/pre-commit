@@ -1,0 +1,58 @@
+#!/bin/zsh
+
+# Make a list of every package that has changed
+typeset -Ua packages
+for file in $(git diff --cached --name-only --relative=Packages); do
+	packages+=${file%%/*}
+done
+
+# Remove any previous archive
+for directory in ${packages}; do
+
+	# Don't make a new archive file if none has been made before
+	if [[ ! -f ./Archives/${directory:t}.tgz ]]; then
+		echo "No archive file exists for ${directory:t}, making initial archive"
+		tar --directory ./Packages --create ${directory:t} --file ./Archives/${directory:t}.tgz --auto
+		git add ./Archives/${directory:t}.tgz
+		continue
+	fi
+
+	file=$(mktemp --suffix .tgz)
+  # Create a new tarball of the package
+  tar --directory ./Packages --create ${directory:t} --file ${file} --auto
+
+	# Compute the SHA256 checksum of the generated tarball
+	checksum=${(s< >)$(shasum -a 256 ${file})[1]}
+
+	# Compute the SHA256 checksum of the current tarball
+	oldsum=${(s< >)$(shasum -a 256 ./Archives/${directory:t}.tgz)[1]}
+
+	# If this new checksum differs from that of the previous archive
+	if [[ ${checksum} == ${oldsum} ]]; then
+		echo "error: checksum for ${directory:t}.tgz is the same" >&2
+		return 1
+	fi
+
+	echo "SHA 256 checksum for ${directory:t}.tgz has changed!"
+	echo "old: ${oldsum}"
+	echo "new: ${checksum}"
+
+	# Replace the old archive with the new one
+	mv -f ${file} ./Archives/${directory:t}.tgz
+
+	# Erase the value of the formula's previous tarball checksum
+	# and replace it with that of the new tarball
+	sed -i -E "s/[0-9a-f]{64}/${checksum}/" ./Formula/${directory:t}.rb
+
+	# Increment the version number
+	version=$(grep 'version' -m 1 ./Formula/${directory:t}.rb)
+	version=${version:11:(-1)}
+	version=$(printf "%.1f" $((version+0.1)))
+	sed -i -E "s/version \"[0-9]\.[0-9]\"/version \"${version}\"/" ./Formula/${directory:t}.rb
+
+	# Add the modified formula & tarball to the git commit
+	git add ./Formula/${directory:t}.rb
+	git add ./Archives/${directory:t}.tgz
+done
+
+git commit --amend -C HEAD --no-verify

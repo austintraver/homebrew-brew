@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+# Check that the manpage exists
+gman -w $1 &> /dev/null
+if [[ $? -ne 0 ]]; then
+	echo "No manual entry for $1" >&2
+	exit 1
+fi
+
+style_path="file://${0:A:h:h}/lib/style.css"
+file=$(mktemp --suffix='.html')
+
+# Save the manpage in HTML formatting to the temporary file
+gman -Thtml ${1} > ${file} 2> /dev/null
+
+# Add a line just below <head> that includes a stylesheet
+gsed -i ${file} \
+	-e "7i<link rel=\"stylesheet\" href=\"${style_path}\">" \
+	-e '/^<a href="#[^>]*>.*<br>$/d'
+# The line above ^ removes some unnecessary links at the top of the page
+
+open -a 'Safari' ${file}
+exit 0
