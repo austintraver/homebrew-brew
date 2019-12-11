@@ -8,6 +8,11 @@ class Transmission < Formula
   #   sha256 "9b8fbc3736ab6996736d0d53622f4e05399db8f53d3f8323c8d203d84886e753" => :catalina
   # end
 
+  bottle do
+    root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
+    sha256 "d21df4f74de336823e41c7db5b730c98678af88a46a3a310fbe5d53efebff91d" => :catalina
+  end
+
   depends_on "pkg-config" => :build
   depends_on "libevent"
   depends_on "openssl@1.1"
