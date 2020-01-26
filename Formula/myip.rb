@@ -2,8 +2,8 @@ class Myip < Formula
   desc "A tool to discovery your current public & private IP"
   homepage "https://github.com/austintraver/homebrew-tap/Packages/myip"
   url "https://github.com/austintraver/homebrew-tap/raw/master/Archives/myip.tgz"
-  version "1.7"
-  sha256 "0b50b1d0067cd4714935c2141cd5cfb60325bfe21a838945979488073a8d9aed"
+  version "1.8"
+  sha256 "f30f9a03a7eb900ffa1654c4308fbad22aba8c75fd7edc13b5c5fa0ef68b7c18"
 
   bottle :unneeded
   depends_on "coreutils"

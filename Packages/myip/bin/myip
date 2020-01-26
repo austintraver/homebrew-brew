@@ -1,10 +1,27 @@
 #!/bin/zsh
 
-if [[ $(uname) == 'Darwin' ]]; then
-  interface='en0'
+if [[ ${#} -eq 0 ]]; then
+	curl -s https://checkip.amazonaws.com
+	ipconfig getifaddr en0
+	exit 0
 fi
 
-curl -s https://checkip.amazonaws.com
-ifconfig ${interface} | grep '\<inet\>' | awk '{ print $2 }'
+zparseopts -D -a option \
+	'v' '-private' \
+	'b' '-public'
+
+if [[ ${#} -ne 0 ]]; then
+	print "Invalid argument: ${@}" >&2
+	exit 1
+fi
+
+case ${option[1]} in
+	-v | --private)
+		ipconfig getifaddr en0
+		;;
+	-b | --public)
+		curl -s https://checkip.amazonaws.com
+		;;
+esac
 
 exit 0

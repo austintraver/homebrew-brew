@@ -1,14 +1,6 @@
-.de URL
-\\$2 \(laURL: \\$1 \(ra\\$3
-.\" defines a macro called URL, whose definition is on the next line, and .. ends it. 
-..
-.if \n[.g] .mso www.tmac
-.\" test for the presence of GNU roff, and source the www.tmac macro definition
-.\" if it is — this overrides the definition just made
-.\" but leaves it intact for non-GNU roff implementations. 
-.TH MYIP 1 "August 2019" "MyIP 1.0" "IP Discovery For You & Me"
+.TH MYIP 1 "January 2020" "MyIP 1.0" "IP Discovery For You & Me"
 .SH NAME
-myip \- an IP discovery utility 
+myip \- an IP discovery utility
 .SH SYNOPSIS
 .SS Common Usage
 .PP
@@ -32,9 +24,7 @@ This is free software: you are free to change and redistribute it.
 .sp 0
 There is NO WARRANTY, to the extent permitted by law.
 .SH "SEE ALSO"
-.BR fake (4),
-.BR news (2),
-.BR read (0),
-.BR the (6),
-.BR numbers (9).
+.BR ifconfig (8),
+.BR ipconfig (8),
+.BR ip (4),
 .PP
