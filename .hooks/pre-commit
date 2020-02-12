@@ -54,5 +54,3 @@ for directory in ${packages}; do
 	git add ./Formula/${directory:t}.rb
 	git add ./Archives/${directory:t}.tgz
 done
-
-git commit --amend -C HEAD --no-verify
