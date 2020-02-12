@@ -3,7 +3,7 @@
 # Check that the manpage exists
 gman -w ${@} > /dev/null || exit
 
-style_path="file://${0:A:h:h}/lib/style.css"
+style_path="file://${0:A:h:h}/share/style.css"
 file=$(mktemp --suffix='.html')
 
 # Save the manpage in HTML formatting to the temporary file
