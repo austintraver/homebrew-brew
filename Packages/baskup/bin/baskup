@@ -1,0 +1,41 @@
+#!/bin/zsh
+
+# Ensure that we are using the Homebrew sqlite3 version
+sqlite3() {
+	/usr/local/opt/sqlite/bin/sqlite3 ${@}
+}
+
+# Make a temporary directory
+directory=$(mktemp -d)
+print "directory: ${directory}"
+
+# Save the path to the messages database
+database=${HOME}/Library/Messages/chat.db
+
+# The filter to select each person we chat with
+filter='SELECT DISTINCT guid FROM chat;'
+
+for line in $(sqlite3 ${database} ${filter}); do
+	echo "line: ${line}"
+	contact=${line}
+	echo "contact: ${contact}"
+	arrIN=(${(s<;>)contact})
+	print "arrIN"
+	print -l ${arrIN}
+	contactNumber=${arrIN[2]}
+	print '--'
+	print "contactNumber: ${contactNumber}"
+	name=${(Cf)$(dscl . read /Users/$USER RealName):1}
+	print "name: ${name}"
+
+	# Perform SQL operations
+	query=${(e)$(<../share/query.sql)}
+	print ${query}
+	return 0
+	sqlite3 ${database} ${query} \
+	| sed \
+		-e "s#1\|/Me: #g" \
+		-e "s#0\|#Friend: #g" \
+	> ${directory}/${contactNumber}/${line}.txt
+
+done

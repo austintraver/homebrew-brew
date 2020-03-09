@@ -8,13 +8,36 @@ myip \- an IP discovery utility
 \fBmyip\fR [\fB-f\fR \fIFILE\fR] [\fB-hb\fR] [\fB-c\fR \fIARGS...\fR]
 .RE
 .SH DESCRIPTION
-The \fBmyip\fR command allows you to know your current public & private IPv4 address.
+The \fBmyip\fR command allows you to query common network information in simple
+easy to use syntax. The information printed corresponds with the default
+network service on your machine, typically Wi-Fi.
 .sp
 .SH OPTIONS
-.sp
-None
+Options start with one or two dashes. None of the options require an
+additional value next to them. Multiple options can be selected. The
+information printed will be in the same order as the provided options.
+.IP "--public"
+Print the public IP address shared by all devices within the network
+.IP "--private"
+Print the private IP address of the default network service
+.IP "-b, --broadcast"
+Print the broadcast address for the local network, which is derived by taking the
+bitwise OR of the network address and the wildcard mask
+.IP "-c, --cidr"
+Print network addresses using CIDR notation
+.IP "-g, --gateway"
+Print the IP address of the gateway (typically the router)
+.IP "-m, --mac"
+Print the MAC address of the default network service
+.IP "-n, --network"
+Print the network address (in CIDR notation), which is derived by taking the
+bitwise AND of the public IP address and the subnet mask.
+.IP "-s, --subnet"
+Print the subnet mask used to divide the network and host address
+.IP "-w, --wildcard"
+Print the wildcard mask, which is the bitwise NOT of the subnet mask
 .SH COPYRIGHT
-Copyright \(co 2019 Splay Tree Capital, Inc.
+Copyright \(co 2020 Splay Tree Capital, Inc.
 .sp 1
 .na
 License GNU GPL 3+ <http://gnu.org/licenses/gpl.html>
@@ -24,6 +47,7 @@ This is free software: you are free to change and redistribute it.
 .sp 0
 There is NO WARRANTY, to the extent permitted by law.
 .SH "SEE ALSO"
+.BR networksetup (8),
 .BR ifconfig (8),
 .BR ipconfig (8),
 .BR ip (4),

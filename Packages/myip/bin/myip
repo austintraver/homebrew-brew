@@ -1,27 +1,171 @@
 #!/bin/zsh
 
-if [[ ${#} -eq 0 ]]; then
-	curl -s https://checkip.amazonaws.com
-	ipconfig getifaddr en0
-	exit 0
-fi
-
 zparseopts -D -a option \
-	'v' '-private' \
-	'b' '-public'
+	'-public' \
+	'-private' \
+	'b' '-broadcast' \
+	'h' '-host' \
+	'g' '-gateway' \
+	's' '-subnet' \
+	'm' '-mac' \
+	'n' '-network' \
+	'w' '-wildcard'
+
+zparseopts -D -a flags \
+	'a' '-all' \
+	'v' '-verbose' \
+	'c' '-cidr'
 
 if [[ ${#} -ne 0 ]]; then
 	print "Invalid argument: ${@}" >&2
 	exit 1
 fi
 
-case ${option[1]} in
-	-v | --private)
-		ipconfig getifaddr en0
-		;;
-	-b | --public)
-		curl -s https://checkip.amazonaws.com
-		;;
-esac
+# By default, print the public/private IP address
+if [[ ${#option} -eq 0 ]]; then
+	option=('--public' '--private')
+elif [[ ${#option} -eq 1 && ${option[(i)(-c)|(--cidr)]} -eq ${#option} ]]; then
+	option+=('--public' '--private')
+fi
 
-exit 0
+cidr=$(( ${flags[(i)(-c)|(--cidr)]} <= ${#flags} ))
+verbose=$(( ${flags[(i)(-v)|(--verbose)|(-a)|(--all)]} <= ${#flags} ))
+
+if (( ${flags[(i)(-a)|(--all)]} <= ${#flags} )); then
+	option=(
+		'--public'
+		'--private'
+		'--broadcast'
+		'--host'
+		'--gateway'
+		'--subnet'
+		'--mac'
+		'--network'
+		'--wildcard'
+	)
+fi
+
+# Capture the name of the preferred network service
+typeset service=${${(f)"$(networksetup -listnetworkserviceorder)"}[2]#* }
+
+# Capture the relevant network information for that service
+typeset -a info=(${${(f)${"$(networksetup -getinfo ${service})"}}##* })
+
+typeset -a public_ip=(${(s<.>)$(curl -s 'https://checkip.amazonaws.com')})
+typeset -a private_ip=(${(s<.>)info[2]})
+
+# The subnet mask divides an IP into its network address and host address
+typeset -a subnet_mask=(${(s<.>)info[3]})
+
+# The wildcard mask is the inversion of the subnet mask
+typeset -a wildcard_mask=()
+for octet in ${subnet_mask}; do
+	# Add the bitwise NOT of this octet to that of the wildcard mask
+	wildcard_mask+=$((~octet & 0xff));
+done
+
+typeset -a gateway_address=(${(s<.>)info[4]})
+
+# The MAC address is a constant, unchanging identifier
+# that is unique to each device on a network
+typeset mac_address=${info[-1]}
+
+# The network address is the portion of the IP address
+# that is common among all members of the network
+typeset -a network_address=()
+for ((i = 1; i <= 4; i += 1)); do
+	network_address+=($((private_ip[i] & subnet_mask[i])))
+done
+
+# Compute the host address
+for ((i = 1; i <= 4; i += 1)); do
+	host_address+=($((private_ip[i] & wildcard_mask[i])))
+done
+
+# Compute the broadcast address
+for ((i = 1; i <= 4; i += 1)); do
+	broadcast_address+=($((network_address[i] | wildcard_mask[i])))
+done
+
+# Compute the suffix used in CIDR notation
+typeset -i suffix=32
+for octet in ${subnet_mask}; do
+	# Reduce the CIDR suffix by each power of 2
+	for ((i = 1; 256 - i > octet; i *= 2)); do
+		((suffix -= 1))
+	done
+done
+
+
+for o in ${option}; do
+	case ${o} in
+	# Print the public IP address
+	--public)
+		if (( cidr )); then
+			tail=${${(M)${(@)${(f)${"$(whois ${(j<.>)public_ip})"}}}:#CIDR*}##*/}
+			(( verbose )) && print -n 'Public IP: '
+			print ${(j<.>)public_ip}/${tail}
+		else
+			(( verbose )) && print -n 'Public IP: '
+			print ${(j<.>)public_ip}
+		fi
+		;;
+	# Print the private IP address
+	--private)
+	  (( verbose )) && print -n 'Private IP: '
+		if (( cidr )); then
+			print ${(j<.>)private_ip}/${suffix}
+		else
+			print ${(j<.>)private_ip}
+		fi
+		;;
+	# Print the broadcast address
+	-b | --broadcast)
+	  (( verbose )) && print -n 'Broadcast Address: '
+		if (( cidr )); then
+			print ${(j<.>)broadcast_address}/${suffix}
+		else
+			print ${(j<.>)broadcast_address}
+		fi
+		;;
+	# Print the host address
+	-h | --host)
+	  (( verbose )) && print -n 'Host Address: '
+		print ${(j<.>)host_address}
+		;;
+	# Print the gateway address (typically the router)
+	-g | --gateway)
+	  (( verbose )) && print -n 'Gateway Address: '
+		if ((cidr)); then
+			print ${(j<.>)gateway_address}/${suffix}
+		else
+			print ${(j<.>)gateway_address}
+		fi
+		;;
+	# Print the MAC address
+	-m | --mac)
+	  (( verbose )) && print -n 'MAC Address: '
+		print ${mac_address}
+		;;
+	# Print the network address in CIDR notation
+	-n | --network)
+	  (( verbose )) && print -n 'Network Address: '
+		if (( cidr )); then
+			print ${(j<.>)network_address}/${suffix}
+		else
+			print ${(j<.>)network_address}
+		fi
+		;;
+	# Print the subnet mask
+	-s | --subnet)
+	  (( verbose )) && print -n 'Subnet Mask: '
+		print ${(j<.>)subnet_mask}
+		;;
+	-w | --wildcard)
+		(( verbose )) && print -n 'Wildcard Mask: '
+		print ${(j<.>)wildcard_mask}
+		;;
+	esac
+done
+
+exit
