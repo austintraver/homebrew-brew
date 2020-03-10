@@ -24,12 +24,7 @@ fi
 # By default, print the public/private IP address
 if [[ ${#option} -eq 0 ]]; then
 	option=('--public' '--private')
-elif [[ ${#option} -eq 1 && ${option[(i)(-c)|(--cidr)]} -eq ${#option} ]]; then
-	option+=('--public' '--private')
 fi
-
-cidr=$(( ${flags[(i)(-c)|(--cidr)]} <= ${#flags} ))
-verbose=$(( ${flags[(i)(-v)|(--verbose)|(-a)|(--all)]} <= ${#flags} ))
 
 if (( ${flags[(i)(-a)|(--all)]} <= ${#flags} )); then
 	option=(
@@ -44,6 +39,9 @@ if (( ${flags[(i)(-a)|(--all)]} <= ${#flags} )); then
 		'--wildcard'
 	)
 fi
+
+typeset -i cidr=$(( ${flags[(i)(-c)|(--cidr)]} <= ${#flags} ))
+typeset -i verbose=$(( ${flags[(i)(-v)|(--verbose)|(-a)|(--all)]} <= ${#flags} ))
 
 # Capture the name of the preferred network service
 typeset service=${${(f)"$(networksetup -listnetworkserviceorder)"}[2]#* }
@@ -61,7 +59,7 @@ typeset -a subnet_mask=(${(s<.>)info[3]})
 typeset -a wildcard_mask=()
 for octet in ${subnet_mask}; do
 	# Add the bitwise NOT of this octet to that of the wildcard mask
-	wildcard_mask+=$((~octet & 0xff));
+	wildcard_mask+=($((~octet & 0xff)))
 done
 
 typeset -a gateway_address=(${(s<.>)info[4]})
