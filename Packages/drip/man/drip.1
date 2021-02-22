@@ -1,14 +1,14 @@
-.TH MYIP 1 "January 2020" "MyIP 1.0" "IP Discovery For You & Me"
+.TH DRIP "February 2021" "Drain 1.1" "discover relevant internet property"
 .SH NAME
-myip \- an IP discovery utility
+drip \- a network addressing utility
 .SH SYNOPSIS
 .SS Common Usage
 .PP
 .RS +4
-\fBmyip\fR [\fB\fIFILE\fR] [\fB-acv\fR] [\fB-bhgsnw\fR] [\fIARGS...\fR]
+\fBdrip\fR [\fB\fIFILE\fR] [\fB-acv\fR] [\fB-bhgsnw\fR] [\fIARGS...\fR]
 .RE
 .SH DESCRIPTION
-The \fBmyip\fR command allows you to query common network information in simple
+The \fBdrip\fR command allows you to query common network information in simple
 easy to use syntax. The information printed corresponds with the default
 network service on your machine, typically Wi-Fi.
 .sp
@@ -36,16 +36,6 @@ bitwise AND of the public IP address and the subnet mask.
 Print the subnet mask used to divide the network and host address
 .IP "-w, --wildcard"
 Print the wildcard mask, which is the bitwise NOT of the subnet mask
-.SH COPYRIGHT
-Copyright \(co 2020 Splay Tree Capital, Inc.
-.sp 1
-.na
-License GNU GPL 3+ <http://gnu.org/licenses/gpl.html>
-.sp 0
-.ad
-This is free software: you are free to change and redistribute it.
-.sp 0
-There is NO WARRANTY, to the extent permitted by law.
 .SH "SEE ALSO"
 .BR networksetup (8),
 .BR ifconfig (8),
