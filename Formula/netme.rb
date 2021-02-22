@@ -3,7 +3,7 @@ class Netme < Formula
   homepage "https://github.com/austintraver/homebrew-tap/Packages/netme"
   url "https://github.com/austintraver/homebrew-tap/raw/master/Archives/netme.tgz"
   version "2.1"
-  sha256 "1e5b535d926518b109ea5eb26f5deec4712f3482e65242e00041ad5a64db75c9"
+  sha256 "a17dd48f61677bc3656bee6e2560d55603e04a4b19ed4255f068d951fda1eb68"
 
   bottle :unneeded
   depends_on :macos => :catalina
