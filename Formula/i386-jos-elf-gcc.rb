@@ -23,7 +23,6 @@ class I386JosElfGcc < Formula
                              "--with-newlib",
                              "--with-as=#{Formula["i386-jos-elf-binutils"].bin}/i386-jos-elf-as",
                              "--with-ld=#{Formula["i386-jos-elf-binutils"].bin}/i386-jos-elf-ld",
-                             "--without-headers",
                              "--enable-languages=c"
       system "make", "all-gcc"
       system "make", "install-gcc"
