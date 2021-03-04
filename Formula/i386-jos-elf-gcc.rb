@@ -38,3 +38,4 @@ class I386JosElfGcc < Formula
   test do
     system "#{bin}/i386-jos-elf-gcc -v"
   end
+end
