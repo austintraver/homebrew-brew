@@ -11,6 +11,19 @@ class I386JosElfGcc < Formula
   depends_on "mpfr"
   depends_on "i386-jos-elf-binutils"
 
+  # The bottles are built on systems with the CLT installed, and do not work
+  # out of the box on Xcode-only systems due to an incorrect sysroot.
+  pour_bottle? do
+    reason "The bottle needs the Xcode CLT to be installed."
+    satisfy { MacOS::CLT.installed? }
+  end
+
+  bottle do
+    root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
+    sha256 big_sur: "da50df061d2646e6deb9eb99f606d32812ec70d810e4e6e71cb18657fae4c26b"
+  end
+
+
   def install
     mkdir "i386-jos-elf-gcc-build" do
       system "../configure", "--target=i386-jos-elf",
