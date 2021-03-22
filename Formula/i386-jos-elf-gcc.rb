@@ -1,11 +1,13 @@
 class I386JosElfGcc < Formula
   homepage "https://gcc.gnu.org/"
-  desc "GNU compiler collection for i386-jos-elf"
-  url "https://ftp.gnu.org/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz"
-  sha256 "27e879dccc639cd7b0cc08ed575c1669492579529b53c9ff27b0b96265fa867d"
   license "GPL-3.0-or-later"
-  version "10.2"
   head "https://gcc.gnu.org/git/gcc.git"
+  desc "GNU compiler collection for i386-jos-elf development"
+  homepage "https://gcc.gnu.org"
+  url "https://ftp.gnu.org/gnu/gcc/gcc-8.3.0/gcc-8.3.0.tar.xz"
+  mirror "https://ftpmirror.gnu.org/gcc/gcc-8.3.0/gcc-8.3.0.tar.xz"
+  sha256 "64baadfe6cc0f4947a84cb12d7f0dfaf45bb58b7e92461639596c21e02d97d2c"
+  version "8.3"
 
   depends_on "gmp"
   depends_on "libmpc"
