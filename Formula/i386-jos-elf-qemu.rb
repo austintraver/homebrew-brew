@@ -4,6 +4,7 @@ class I386JosElfQemu < Formula
   homepage "http://wiki.qemu.org"
   head "https://github.com/mit-pdos/6.828-qemu.git", :branch => "master"
   conflicts_with "qemu"
+  version "2.3"
   
   bottle do
     root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
