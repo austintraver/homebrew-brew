@@ -25,10 +25,8 @@ class I386JosElfBinutils < Formula
                           "--disable-nls"
     system "make"
     system "make", "install"
-    # avoid conflict with gdb
-    if Formula["i386-jos-elf-gdb"].any_version_installed?
-      rm_r share/"info"
-      rm_r lib
+    
+    info.rmtree
     end
   end
 
