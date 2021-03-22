@@ -19,32 +19,22 @@ class I386JosElfGdb < Formula
   end
 
   depends_on "python@3.9"
-  depends_on "xz" # required for lzma support
-
-
-  conflicts_with "gdb", because: "both install include/gdb, share/gdb and share/info"
-  conflicts_with "x86_64-elf-gdb", because: "both install include/gdb, share/gdb and share/info"
-
 
   def install
     system "./configure", "--prefix=#{prefix}",
                           "--target=i386-jos-elf",
-                          "--program-prefix=i386-jos-elf-",
-                          "--disable-nls",
+                          "--with-gdb-datadir=#{pkgshare}"
                           "--disable-werror"
-                          "--disable-debug"
-                          "--disable-dependency-tracking"
-                          "--with-lzma"
                           "--with-python=#{Formula["python@3.9"].opt_bin}/python3"
-                          "--disable-binutils"
 
     system "make"
-    system "make", "install-gdb"
-    # avoid conflict with binutil
-    # if Formula["i386-jos-elf-binutils"].any_version_installed?
-    #   rm_r share/"info"
-    #   rm_r lib
-    # end
+    system "make", "install"
+    
+    # avoid conflict with binutils
+    rm_rf include
+    rm_rf lib
+    rm_rf share/"locale"
+    rm_rf share/"info"
   end
 
   test do
