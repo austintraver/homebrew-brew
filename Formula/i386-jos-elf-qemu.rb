@@ -4,6 +4,19 @@ class I386JosElfQemu < Formula
   homepage "http://wiki.qemu.org"
   head "https://github.com/mit-pdos/6.828-qemu.git", :branch => "master"
   conflicts_with "qemu"
+  
+  bottle do
+    root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
+    sha256 big_sur: "0246ce8a945b749fcc548a01c24a6d7499d3a55c8fdab9cc5a0a92d3bd1dc1cd"
+  end
+
+  # The bottles are built on systems with the CLT installed, and do not work
+  # out of the box on Xcode-only systems due to an incorrect sysroot.
+  pour_bottle? do
+    reason "The bottle needs the Xcode CLT to be installed."
+    satisfy { MacOS::CLT.installed? }
+  end
+
 
   depends_on "pkg-config" => :build
   depends_on "libtool" => :build

@@ -15,8 +15,9 @@ class I386JosElfGcc < Formula
   depends_on "i386-jos-elf-binutils"
 
   bottle do
-    root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
-    sha256 big_sur: "da50df061d2646e6deb9eb99f606d32812ec70d810e4e6e71cb18657fae4c26b"
+    root_url "https://homebrew.bintray.com/bottles-tap"
+    rebuild 1
+    sha256 big_sur: "fb58876d6645862b55867066650d25d3115d54daa9e2358c8d1c115f4b52dad7"
   end
 
   # The bottles are built on systems with the CLT installed, and do not work
@@ -31,7 +32,7 @@ class I386JosElfGcc < Formula
 
     args = [
       "--prefix=#{prefix}",
-      "--enable-languages=#{languages.join(",")}",
+      "--enable-languages=c,go",
       "--disable-werror",
       "--disable-nls",
       "--disable-libssp",

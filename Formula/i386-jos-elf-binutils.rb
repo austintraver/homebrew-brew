@@ -5,10 +5,11 @@ class I386JosElfBinutils < Formula
   sha256 "f67c632ccd81137d745681672bb4515a3411afa53722ccf01caa07d798fd8fb0"
   license "GPL-3.0-or-later"
   version "2.36"
-
+  
   bottle do
-    root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
-    sha256 big_sur: "35b9101e36e0d2deeab88cafdb2092c0d523aafd7f8a4c0f8c93642f7273c3f1"
+    root_url "https://homebrew.bintray.com/bottles-tap"
+    rebuild 1
+    sha256 big_sur: "1d2674534012c5cb8b7b8cf986675fa9b3b23c32513f46b004a589db4dcf3ea8"
   end
 
   # The bottles are built on systems with the CLT installed, and do not work
@@ -27,7 +28,6 @@ class I386JosElfBinutils < Formula
     system "make", "install"
     
     info.rmtree
-    end
   end
 
   test do

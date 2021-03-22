@@ -7,8 +7,9 @@ class I386JosElfGdb < Formula
   version "10.1"
 
   bottle do
-    root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
-    sha256 big_sur: "0246ce8a945b749fcc548a01c24a6d7499d3a55c8fdab9cc5a0a92d3bd1dc1cd"
+    root_url "https://homebrew.bintray.com/bottles-tap"
+    rebuild 1
+    sha256 big_sur: "9624860f7ca2017249fcc91127b34491af5f6682e0b0554ae6956a5045ecfed9"
   end
 
   # The bottles are built on systems with the CLT installed, and do not work
