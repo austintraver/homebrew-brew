@@ -12,11 +12,6 @@ class I386JosElfGcc < Formula
   depends_on "mpfr"
   depends_on "i386-jos-elf-binutils"
 
-  uses_from_macos "zlib"
-  
-  # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
-  cxxstdlib_check :skip
-
   bottle do
     root_url "https://github.com/austintraver/homebrew-tap/raw/master/Bottles"
     sha256 big_sur: "da50df061d2646e6deb9eb99f606d32812ec70d810e4e6e71cb18657fae4c26b"
@@ -30,54 +25,35 @@ class I386JosElfGcc < Formula
   end
 
   def install
-    # GCC will suffer build errors if forced to use a particular linker.
-    ENV.delete "LD"
+   binutils = Formulary.factory "i386-jos-elf-binutils"
 
-    args << "SED=/usr/bin/sed"
-    # Xcode 10 dropped 32-bit support
-    args << "--disable-multilib" if DevelopmentTools.clang_build_version >= 1000
-
-    # System headers may not be in /usr/include
-    sdk = MacOS.sdk_path_if_needed
-    if sdk
-      args << "--with-native-system-header-dir=/usr/include"
-      args << "--with-sysroot=#{sdk}"
-    end
-
-    # Ensure correct install names when linking against libgcc_s;
-    # see discussion in https://github.com/Homebrew/legacy-homebrew/pull/34303
-    inreplace "libgcc/config/t-slibgcc-darwin", "@shlib_slibdir@", "#{HOMEBREW_PREFIX}/lib/gcc"
-
-    languages = %w[c c++ fortran]
-
-    pkgversion = "Homebrew GCC #{pkg_version} #{build.used_options*" "}".strip
-    cpu = Hardware::CPU.arm? ? "aarch64" : "x86_64"
-
-    args = %W[
-      --target=i386-jos-elf
-      --prefix=#{prefix}
-      --with-as=#{Formula["i386-jos-elf-binutils"].bin}/i386-jos-elf-as
-      --with-ld=#{Formula["i386-jos-elf-binutils"].bin}/i386-jos-elf-ld
-      --with-gmp=#{Formula["gmp"].opt_prefix}
-      --with-mpfr=#{Formula["mpfr"].opt_prefix}
-      --with-mpc=#{Formula["libmpc"].opt_prefix}
-      --with-isl=#{Formula["isl"].opt_prefix}
-      --with-pkgversion=#{pkgversion}
-      --enable-languages=#{languages.join(",")}
-      --with-newlib
-      --with-system-zlib
-      --disable-nls
+    args = [
+      "--prefix=#{prefix}",
+      "--enable-languages=#{languages.join(",")}",
+      "--disable-werror",
+      "--disable-nls",
+      "--disable-libssp",
+      "--disable-libmudflap",
+      "--disable-multilib",
+      "--with-as=#{binutils.bin}/i386-jos-elf-as",
+      "--with-ld=#{binutils.bin}/i386-jos-elf-ld",
+      "--with-newlib",
+      "--without-headers",
+      "--target=i386-jos-elf"
     ]
 
     mkdir "build" do
       system "../configure", *args
-      # Use -headerpad_max_install_names in the build,
-      # otherwise updated load commands won't fit in the Mach-O header.
-      # This is needed because `gcc` avoids the superenv shim.
-      system "make", "BOOT_LDFLAGS=-Wl,-headerpad_max_install_names"
-      system "make", "install"
+      system "make", "all-gcc"
+      system "make", "install-gcc"
+      system "make", "all-target-libgcc"
+      system "make", "install-target-libgcc"
     end
 
+    # remove miscellaneous files in order to prevent a conflict with 
+    # those installed by the canonical GCC package on Homebrew
+    info.rmtree
+    man7.rmtree
   end
 
   test do
