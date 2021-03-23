@@ -2,29 +2,28 @@
 
 # Check if the supplied port is not in the valid TCP range
 if (( ${1} < 0 || ${1} > 65535 )); then
-	>&2 echo "drain: invalid port '${1}' not in TCP port range 0 - 65535."
+	echo "drain: invalid port '${1}' not in TCP port range 0 - 65535." >&2 
 	exit 1
 fi
 
 # Check if a non-super-user is trying to modify a well-known port
 if (( ${1} < 1024 && ${UID} != 0 )); then
-	>&2 echo "drain: well-known port '${1}' requires super user access to modify."
+	echo "drain: well-known port '${1}' requires super user access to modify." >&2 
 	exit 1
 fi
 
 # Check if a process can be found on the specified port
 if (( $(lsof -ti :${1})$? == 1 )) &> /dev/null; then
-	>&2 echo "drain: no process found running on port '${1}'"
+	echo "drain: no process found running on port '${1}'" >&2 
 	exit 1
 fi
 
 # Kill the process running on that port
 kill $(lsof -ti :${1}) &> /dev/null || {
 	# Report an error if we are unsuccessful
-	>&2 echo "drain: failed to kill process running on port '${1}' 
+	echo "drain: failed to kill process running on port '${1}'
 	with command\n" >&2
 	exit 1
 }
 
-# Otherwise just exit normally
 exit 0

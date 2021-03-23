@@ -1,56 +1,99 @@
 #!/bin/zsh
 
 # Make a list of every package that has changed
-typeset -Ua packages
-for file in $(git diff --cached --name-only --relative=Packages); do
+typeset -Ua packages=()
+
+typeset pkgdir="./Packages"
+
+# Make a list of packages whose inner files have contents 
+# which have been altered in the latest commit
+for file in $(git diff --cached --name-only --relative=${pkgdir:t}); do
 	packages+=${file%%/*}
 done
 
-# Remove any previous archive
-for directory in ${packages}; do
+
+# Update the version of any archives of
+# a package whose underlying contents have been altered
+for package in ${packages}; do
+
+	typeset archive="./Archives/${package}.tgz"
+	typeset formula="./Formula/${package}.rb"
 
 	# Don't make a new archive file if none has been made before
-	if [[ ! -f ./Archives/${directory:t}.tgz ]]; then
-		echo "No archive file exists for ${directory:t}, making initial archive"
-		tar --directory ./Packages --create ${directory:t} --file ./Archives/${directory:t}.tgz --auto
-		git add ./Archives/${directory:t}.tgz
-		continue
+	if [[ ! -f ${archive} ]]; then
+		echo "No archive file of ${package} exists, add it using the following commands:" >&2
+		echo "\ttar --directory ${pkgdir} --create ${package} --file ${archive} --auto" >&2
+		echo "\tshasum -a 256 ${archive}" >&2
+		exit 1
 	fi
 
-	file=$(mktemp --suffix .tgz)
-  # Create a new tarball of the package
-  tar --directory ./Packages --create ${directory:t} --file ${file} --auto
+	tmpfile=$(mktemp --suffix .tgz)
 
-	# Compute the SHA256 checksum of the generated tarball
-	checksum=${(s< >)$(shasum -a 256 ${file})[1]}
+	# Create a new tarball of the package
+	echo "${ZSH_SCRIPT}:${LINENO}: creating archive of package ${package}..."
+	tar --directory ${pkgdir} --create ${package} --file ${tmpfile} --auto || {
+		echo "${ZSH_SCRIPT}:${LINENO}: tar was unable to create the archive file" >&2
+		typeset tmpfile pkgdir >&2
+		exit 1
+	}
 
 	# Compute the SHA256 checksum of the current tarball
-	oldsum=${(s< >)$(shasum -a 256 ./Archives/${directory:t}.tgz)[1]}
+	typeset old_checksum=${$(shasum -a 256 ${archive})##-*}
 
-	# If this new checksum differs from that of the previous archive
-	if [[ ${checksum} == ${oldsum} ]]; then
-		echo "error: checksum for ${directory:t}.tgz is the same" >&2
-		return 1
+	# Compute the SHA256 checksum of the generated tarball
+	typeset new_checksum=${$(shasum -a 256 ${tmpfile})##-*}
+
+	# Compare the message digests. If the underlying file contents truly
+	# changed, there should be a difference between the two checksums
+	if [[ ${new_checksum} == ${old_checksum} ]]; then
+		echo "error: the package with archive ${archive} contains 
+		contents which are believed to have been changed in the latest commit,
+		yet the checksum of ${archive} remains unchanged" >&2
+		exit 1
 	fi
 
-	echo "SHA 256 checksum for ${directory:t}.tgz has changed!"
-	echo "old: ${oldsum}"
-	echo "new: ${checksum}"
+	# Extract the version number from the formula 
+	# and increment the patch version number
+	typeset extraction=$(
+		grep -E 'version' -m 1 ${formula} \
+			| awk '{print $2}' \
+			| grep -E -o '[^"]+'
+	)
+	if [[ -z ${extraction} ]]; then
+		echo "${ZSH_SCRIPT}:${LINENO}: error
+		unable to extract version number from formula" >&2
+		exit 1
+	fi
+	typeset -a old_version=(${(s<.>)extraction})
+	typeset -a new_version=(${old_version})
+	(( new_version[-1] += 1 ))
 
-	# Replace the old archive with the new one
-	mv -f ${file} ./Archives/${directory:t}.tgz
+	echo "${ZSH_SCRIPT}:${LINENO} updating package ${package} information
+	version: ${(j<.>)old_version} -> ${(j<.>)new_version}
+	checksum: ${old_checksum} -> ${new_checksum}"
 
-	# Erase the value of the formula's previous tarball checksum
-	# and replace it with that of the new tarball
-	sed -i -E "s/[0-9a-f]{64}/${checksum}/" ./Formula/${directory:t}.rb
+	# Update the value of the SHA 256 checksum for the current formula 
+	print -- '-----'
+	print -- sed -i -E "s/${old_checksum}/${new_checksum}/" ${formula}
+	sed -i -E "s/${old_checksum}/${new_checksum}/" ${formula}
+	print -- '-----'
 
-	# Increment the version number
-	version=$(grep 'version' -m 1 ./Formula/${directory:t}.rb)
-	version=${version:11:(-1)}
-	version=$(printf "%.1f" $((version+0.1)))
-	sed -i -E "s/version \"[0-9]\.[0-9]\"/version \"${version}\"/" ./Formula/${directory:t}.rb
+	# Update the formula with the incremented version number
+	print -- '-----'
+	print -- sed -i -E "s/version \"${(j<.>)old_version}\"/version \"${(j<.>)new_version}\"/" ${formula}
+	sed -i -E "s/version \"${(j<.>)old_version}\"/version \"${(j<.>)new_version}\"/" ${formula}
+	print -- '-----'
 
-	# Add the modified formula & tarball to the git commit
-	git add ./Formula/${directory:t}.rb
-	git add ./Archives/${directory:t}.tgz
+	# Replace the old archive with the updated version
+	mv -v -f ${tmpfile} ${archive}
+
+	# Add the newly updated archive tarball and 
+	# the corresponding amendments to its formula 
+	# to the current commit being made
+	git add ${archive} ${formula}
+
+	# Remove any old cached installations of the package
+	# which allows us to test the new installation locally
+	# before pushing it out to GitHub
+	rm -f -v ${HOME}/Library/Caches/Homebrew/downloads/*${archive:t}(N)
 done
