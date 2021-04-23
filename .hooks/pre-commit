@@ -39,9 +39,11 @@ for package in ${packages}; do
 
 	# Compute the SHA256 checksum of the current tarball
 	typeset old_checksum=${$(shasum -a 256 ${archive})##-*}
+	# TODO replace wtih =${(s< >)$(shasum -a 256 ${file})[1]}
 
 	# Compute the SHA256 checksum of the generated tarball
 	typeset new_checksum=${$(shasum -a 256 ${tmpfile})##-*}
+	# TODO replace wtih =${(s< >)$(shasum -a 256 ${file})[1]}
 
 	# Compare the message digests. If the underlying file contents truly
 	# changed, there should be a difference between the two checksums
