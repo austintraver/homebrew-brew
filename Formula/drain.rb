@@ -3,7 +3,7 @@ class Drain < Formula
   homepage "https://github.com/austintraver/homebrew-tap/Packages/drain"
   url "https://github.com/austintraver/homebrew-tap/raw/master/Archives/drain.tgz"
   version "1.11"
-  sha256 "049b8615eaa779d999269e99e893d5d0c145bd6adc04dce2b8e88630f30ac112"
+  sha256 "19a00158f4a3df6d06c9883b709505f40058ced3d9dcb3fb05f58b909bfc6786"
 
   bottle :unneeded
   depends_on "coreutils"
