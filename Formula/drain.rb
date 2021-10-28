@@ -5,7 +5,6 @@ class Drain < Formula
   version "1.11"
   sha256 "19a00158f4a3df6d06c9883b709505f40058ced3d9dcb3fb05f58b909bfc6786"
 
-  bottle :unneeded
   depends_on "coreutils"
   depends_on :macos => :catalina
 

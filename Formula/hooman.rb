@@ -5,7 +5,6 @@ class Hooman < Formula
   version "1.2"
   sha256 "5ccd0489789819ff43837fd3548b9c7ff184857e9be1f090fff39ef75339e374"
 
-  bottle :unneeded
   depends_on "gnu-sed"
   depends_on "man-db"
   depends_on :macos => :catalina

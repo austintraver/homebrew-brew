@@ -5,7 +5,6 @@ class Netme < Formula
   version "2.1"
   sha256 "a17dd48f61677bc3656bee6e2560d55603e04a4b19ed4255f068d951fda1eb68"
 
-  bottle :unneeded
   depends_on :macos => :catalina
 
   def install

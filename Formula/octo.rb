@@ -5,7 +5,6 @@ class Octo < Formula
   version "1.7"
   sha256 "05383b6592850b65678d50ce968ceb29fe2907224c4b6d86b61ff92dcf299fa1"
 
-  bottle :unneeded
   depends_on "coreutils"
   depends_on :macos => :catalina
 
